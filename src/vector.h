@@ -32,6 +32,14 @@
        element##_ptr < (vector).data + (vector).size && (element = *element##_ptr, 1); /* "=", not "=="! */ \
        element##_ptr++)
 
+#define foreach_if(type, element, vector, condition) \
+  for (type *element = (vector).data; (condition) && element < (vector).data + (vector).size; element++)
+#define foreach_ptr_if(type, element, vector, condition)                                                    \
+  for (type *element##_ptr = (vector).data, *element = NULL;                                                \
+       (condition) &&                                                                                       \
+       element##_ptr < (vector).data + (vector).size && (element = *element##_ptr, 1); /* "=", not "=="! */ \
+       element##_ptr++)
+
 /// Iterate over each index and element of a vector.
 #define foreach_index(index, vector) \
   for (size_t index = 0; index < (vector).size; index++)
@@ -75,6 +83,15 @@
       if (memcmp((vector).data + _index, &(element), sizeof(element)) == 0) { break; } \
     }                                                                                  \
     if (_index < (vector).size) vector_remove_unordered(vector, _index);               \
+  } while (0)
+
+/// Remove all elements from a vector that are in another vector.
+#define vector_remove_elements_unordered(vector, elements)            \
+  do {                                                                \
+    for (size_t _i = 0; _i < (elements).size; _i++) {                 \
+      vector_remove_element_unordered((vector), (elements).data[_i]); \
+    }                                                                 \
+    vector_clear(elements);                                           \
   } while (0)
 
 /// Append a vector to another vector
